@@ -4,4 +4,11 @@
     <string name="app_name">Labb</string>
     <string name="title_item_detail">Item Detail</string>
 
+
+    <string name="add">Add</string>
+    <string name="sorting">Sorting</string>
+    <string name="ascending">Ascending order</string>
+    <string name="help">Help</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>

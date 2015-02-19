@@ -1,10 +1,21 @@
 package com.example.izmir.labb;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+//import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
 
-
+import com.example.izmir.labb.dummy.DummyContent;
+/*import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;*/
 /**
  * An activity representing a list of Items. This activity
  * has different presentations for handset and tablet-size devices. On
@@ -21,7 +32,7 @@ import android.support.v4.app.FragmentActivity;
  * {@link ItemListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class ItemListActivity extends FragmentActivity
+public class ItemListActivity extends ActionBarActivity
         implements ItemListFragment.Callbacks {
 
     /**
@@ -29,6 +40,10 @@ public class ItemListActivity extends FragmentActivity
      * device.
      */
     private boolean mTwoPane;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,5 +92,67 @@ public class ItemListActivity extends FragmentActivity
             detailIntent.putExtra(ItemDetailFragment.ARG_ITEM_ID, id);
             startActivity(detailIntent);
         }
+
+
     }
+    /*
+private ActionMode mActionMode;
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        // Called when the action mode is created; startActionMode() was called
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.menu_file_b, menu);
+            return true;
+        }
+
+        // Called each time the action mode is shown. Always called after onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.edit:
+                    //shareCurrentItem();
+                    //mode.finish(); // Action picked, so close the CAB
+                    return true;
+                case R.id.delete:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Called when the user exits the action mode
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+        }
+
+
+        R.id.item_list.setOnItemLongClickListener(new View.OnLongClickListener()) {
+            // Called when the user long-clicks on someView
+            public boolean onLongClick(View view) {
+                if (mActionMode != null) {
+                    return false;
+                }
+
+                // Start the CAB using the ActionMode.Callback defined above
+                mActionMode = getActivity().startActionMode(mActionModeCallback);
+                view.setSelected(true);
+                return true;
+            }
+        }
+
+
+    };
+
+*/
 }

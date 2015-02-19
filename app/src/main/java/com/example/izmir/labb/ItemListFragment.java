@@ -3,10 +3,12 @@ package com.example.izmir.labb;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
 
 import com.example.izmir.labb.dummy.DummyContent;
 
@@ -69,6 +71,8 @@ public class ItemListFragment extends ListFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+
         super.onCreate(savedInstanceState);
 
         // TODO: replace with a real list adapter.
@@ -148,5 +152,45 @@ public class ItemListFragment extends ListFragment {
         }
 
         mActivatedPosition = position;
+    }
+
+/*
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_file, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    */
+
+
+    @Override
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        inflater.inflate(R.menu.menu_file, menu);
+
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.ascending:
+
+                if (item.isChecked())
+                {
+                    item.setChecked(false);
+                }
+                else
+                {
+                    item.setChecked(true);
+                }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

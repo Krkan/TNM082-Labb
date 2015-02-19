@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:Labb="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/add"
+        android:icon="@android:drawable/ic_input_add"
+        android:title="@string/add"
+        Labb:showAsAction="always"
+        />
+
+
+    <item android:id="@+id/help"
+        android:title="@string/help"
+        Labb:showAsAction="never"
+        />
+
+    <item android:id="@+id/sorting"
+        android:title="@string/sorting"
+        Labb:showAsAction="never"
+        />
+
+    <item android:id="@+id/ascending"
+        android:title="@string/ascending"
+        Labb:showAsAction="never"
+        android:checkable="true"
+        android:checked="true"
+        />
+
+
+
+</menu>
