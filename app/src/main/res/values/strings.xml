@@ -11,4 +11,6 @@
     <string name="help">Help</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="context">Context options</string>
+
 </resources>

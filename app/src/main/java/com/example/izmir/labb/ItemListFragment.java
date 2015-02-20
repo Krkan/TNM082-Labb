@@ -3,6 +3,8 @@ package com.example.izmir.labb;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.DisplayMetrics;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,7 +24,7 @@ import com.example.izmir.labb.dummy.DummyContent;
  * interface.
  */
 public class ItemListFragment extends ListFragment {
-
+public ActionMode mActionMode;
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
@@ -121,6 +123,28 @@ public class ItemListFragment extends ListFragment {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+
+        if (isTablet()) {
+            mActionMode = getActivity().startActionMode(mActionModeCallback);
+
+       }
+    }
+
+
+    public boolean isTablet() {
+        DisplayMetrics dm = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        double x = Math.pow(dm.widthPixels / dm.xdpi, 2);
+        double y = Math.pow(dm.heightPixels / dm.ydpi, 2);
+        double screenInches = Math.sqrt(x + y);
+        boolean tablet = false;
+
+        if (screenInches >= 6) {
+            tablet = true;
+        }
+
+        return tablet;
+
     }
 
     @Override
@@ -193,4 +217,50 @@ public class ItemListFragment extends ListFragment {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        // Called when the action mode is created; startActionMode() was called
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+
+            MenuInflater inflater = mode.getMenuInflater();
+            mode.setTitle(getResources().getString(R.string.context));
+            inflater.inflate(R.menu.menu_file_b, menu);
+            return true;
+        }
+
+        // Called each time the action mode is shown. Always called after onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.delete:
+                    //shareCurrentItem();
+                    //mode.finish(); // Action picked, so close the CAB
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Called when the user exits the action mode
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+        }
+
+
+
+
+    };
+
 }
