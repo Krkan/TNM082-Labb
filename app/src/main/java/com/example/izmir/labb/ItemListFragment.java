@@ -10,9 +10,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.example.izmir.labb.dummy.DummyContent;
+import com.example.izmir.labb.Datasource;
+import com.example.izmir.labb.Item;
+
+import java.util.ArrayList;
+
 
 /**
  * A list fragment representing a list of Items. This fragment
@@ -25,6 +30,8 @@ import com.example.izmir.labb.dummy.DummyContent;
  */
 public class ItemListFragment extends ListFragment {
 public ActionMode mActionMode;
+
+    public Datasource DS;
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
@@ -52,6 +59,7 @@ public ActionMode mActionMode;
          * Callback for when an item has been selected.
          */
         public void onItemSelected(String id);
+        //public void onItemSelected(long id);
     }
 
     /**
@@ -71,18 +79,55 @@ public ActionMode mActionMode;
     public ItemListFragment() {
     }
 
+
+
+
+
+private void openDB()
+{
+    DS = new Datasource(getActivity());
+    DS.open();
+
+}
+
+    private  void closeDB()
+    {
+
+        DS.close();
+    }
+
+private ArrayAdapter mAdapter;
+private ArrayList myList;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        openDB();
+
 
         super.onCreate(savedInstanceState);
-
+            myList = DS.fetchAll(1,false);
+/*
         // TODO: replace with a real list adapter.
         setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 DummyContent.ITEMS));
+*/
+
+
+//long k = DS.insertItem("Some item",1,"random item");
+       mAdapter = new ArrayAdapter<Item>(
+                getActivity(),
+                android.R.layout.simple_list_item_activated_1,
+                android.R.id.text1,
+                myList);
+
+        setListAdapter(mAdapter);
+
+closeDB();
+
     }
 
     @Override
@@ -118,16 +163,21 @@ public ActionMode mActionMode;
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
+        openDB();
         super.onListItemClick(listView, view, position, id);
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        //mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
 
+        mCallbacks.onItemSelected(Long.toString(DS.fetchAll(1,false).get(position).getId()));
+       // mCallbacks.onItemSelected(DS.fetchAll(1,false).get(position).getTitle());
         if (isTablet()) {
             mActionMode = getActivity().startActionMode(mActionModeCallback);
 
        }
+    closeDB();
+
     }
 
 
@@ -213,6 +263,21 @@ public ActionMode mActionMode;
                 {
                     item.setChecked(true);
                 }
+            case R.id.add:
+                openDB();
+                long rowID = DS.insertItem("New Post", 2, "Auto add");
+
+
+                Item temp = new Item();
+                temp.setId(rowID);
+                temp.setTitle("New Post");
+                temp.setRating(2);
+                temp.setDescription("Auto add");
+
+                myList.add(temp);
+                mAdapter.notifyDataSetChanged();
+                closeDB();
+
             default:
                 return super.onOptionsItemSelected(item);
         }
