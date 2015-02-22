@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 //import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.RatingBar;
+import android.widget.TextView;
 
 import com.example.izmir.labb.dummy.DummyContent;
 /*import android.view.Menu;
@@ -72,6 +75,7 @@ public class ItemListActivity extends ActionBarActivity
      * Callback method from {@link ItemListFragment.Callbacks}
      * indicating that the item with the given ID was selected.
      */
+    /*
     @Override
     public void onItemSelected(String id) {
         if (mTwoPane) {
@@ -94,6 +98,48 @@ public class ItemListActivity extends ActionBarActivity
             startActivity(detailIntent);
         }
 
+    }
+
+*/
+    @Override
+    public void onItemSelected(long id, int rating, String title, String description) {
+
+
+        if (mTwoPane) {
+            /*
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            Bundle arguments = new Bundle();
+            arguments.putString(ItemDetailFragment.ARG_ITEM_ID, id);
+            ItemDetailFragment fragment = new ItemDetailFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.item_detail_container, fragment)
+                    .commit();
+                    */
+
+            TextView myTitle= (TextView)findViewById(R.id.theTitle);
+            myTitle.setText(title);
+
+
+            TextView myDescription= (TextView)findViewById(R.id.theDescription);
+            myDescription.setText(description);
+
+            RatingBar bar = (RatingBar)findViewById(R.id.theRatingBar);
+            bar.setRating(rating);
+
+        } else {
+            // In single-pane mode, simply start the detail activity
+            // for the selected item ID.
+            Intent detailIntent = new Intent(this, ItemDetailActivity.class);
+            detailIntent.putExtra("title",title);
+            detailIntent.putExtra("description",description);
+            detailIntent.putExtra("rating",rating);
+            startActivity(detailIntent);
+        }
+
+    }
 
     }
 
@@ -101,6 +147,6 @@ public class ItemListActivity extends ActionBarActivity
 
 
 
-}
+
 
 

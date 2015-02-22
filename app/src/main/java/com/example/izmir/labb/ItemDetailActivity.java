@@ -1,12 +1,16 @@
 package com.example.izmir.labb;
 
 import android.content.Intent;
+import android.media.Rating;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.RatingBar;
+import android.widget.TextView;
 
 
 /**
@@ -25,6 +29,12 @@ public class ItemDetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
 
+        TextView title = (TextView)findViewById(R.id.theTitle_m);
+        title.setText(getIntent().getExtras().getString("title"));
+        TextView description = (TextView)findViewById(R.id.theDescription_m);
+        description.setText(getIntent().getExtras().getString("description"));
+        RatingBar rb = (RatingBar)findViewById(R.id.ratingBar_m);
+        rb.setRating(getIntent().getExtras().getInt("rating"));
         // Show the Up button in the action bar.
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
