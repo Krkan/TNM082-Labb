@@ -2,21 +2,23 @@ package com.example.izmir.labb;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-
-import com.example.izmir.labb.Datasource;
-import com.example.izmir.labb.Item;
-
 import java.util.ArrayList;
+
+
+
 
 
 /**
@@ -32,6 +34,8 @@ public class ItemListFragment extends ListFragment {
 public ActionMode mActionMode;
 
     public Datasource DS;
+    boolean isAscending = true;
+
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
@@ -103,6 +107,20 @@ public ActionMode mActionMode;
 
 
 
+    public void deleteFromDB(long id)
+    {
+        openDB();
+        DS.deleteItem(Long.toString(id));
+        myList.clear();
+        myList.addAll(DS.fetchAll(1,isAscending));
+        mAdapter.notifyDataSetChanged();
+
+        closeDB();
+
+
+    }
+
+
 
 private void openDB()
 {
@@ -118,16 +136,36 @@ private void openDB()
     }
 
 public ArrayAdapter mAdapter;
+
 public ArrayList myList;
+
+FragmentManager fm;
+FragmentTransaction ft;
+    Fragment frag = new Fragment();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
+
+
+        if(isTablet())
+        {
+
+
+        fm=getFragmentManager();
+        ft=fm.beginTransaction();
+        fm.popBackStack();
+        ft.replace(R.id.item_detail_container, frag).addToBackStack(null).commit();
+
+            }
+            setHasOptionsMenu(true);
+ super.onCreate(savedInstanceState);
+
+
+
+
+
         openDB();
-
-
-        super.onCreate(savedInstanceState);
-            myList = DS.fetchAll(1,false);
+            myList = DS.fetchAll(1,isAscending);
 /*
         // TODO: replace with a real list adapter.
         setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
@@ -139,13 +177,17 @@ public ArrayList myList;
 
 
 //long k = DS.insertItem("Some item",1,"random item");
+
        mAdapter = new ArrayAdapter<Item>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 myList);
 
+
+
         setListAdapter(mAdapter);
+
 
 closeDB();
 
@@ -182,8 +224,15 @@ closeDB();
         mCallbacks = sDummyCallbacks;
     }
 */
+   // public int pos;
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
+
+        if(isTablet()) {
+            fm.popBackStack();
+        }
+
+
         openDB();
         super.onListItemClick(listView, view, position, id);
 
@@ -193,12 +242,15 @@ closeDB();
 
        // mCallbacks.onItemSelected(Long.toString(DS.fetchAll(1,false).get(position).getId()));
        // mCallbacks.onItemSelected(DS.fetchAll(1,false).get(position).getTitle());
-        mCallbacks.onItemSelected(DS.fetchAll(1,false).get(position).getId(),DS.fetchAll(1,false).get(position).getRating(), DS.fetchAll(1,false).get(position).getTitle(),
-                DS.fetchAll(1,false).get(position).getDescription());
+        mCallbacks.onItemSelected(DS.fetchAll(1,isAscending).get(position).getId(),DS.fetchAll(1,isAscending).get(position).getRating(), DS.fetchAll(1,isAscending).get(position).getTitle(),
+                DS.fetchAll(1,isAscending).get(position).getDescription());
         if (isTablet()) {
             mActionMode = getActivity().startActionMode(mActionModeCallback);
 
        }
+        //pos=position;
+        mActivatedPosition = position;
+
     closeDB();
 
     }
@@ -225,7 +277,7 @@ closeDB();
         super.onSaveInstanceState(outState);
         if (mActivatedPosition != ListView.INVALID_POSITION) {
             // Serialize and persist the activated item position.
-            outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
+           // outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
     }
 
@@ -234,6 +286,9 @@ closeDB();
      * given the 'activated' state when touched.
      */
     public void setActivateOnItemClick(boolean activateOnItemClick) {
+
+
+
         // When setting CHOICE_MODE_SINGLE, ListView will automatically
         // give items the 'activated' state when touched.
         getListView().setChoiceMode(activateOnItemClick
@@ -242,13 +297,20 @@ closeDB();
     }
 
     private void setActivatedPosition(int position) {
+
         if (position == ListView.INVALID_POSITION) {
             getListView().setItemChecked(mActivatedPosition, false);
-        } else {
+            //Log.v("UAAAA","HEEYY");
+
+        }
+
+        else {
             getListView().setItemChecked(position, true);
         }
 
+
         mActivatedPosition = position;
+
     }
 
 /*
@@ -288,19 +350,26 @@ closeDB();
                 }
             case R.id.add:
                 openDB();
-                long rowID = DS.insertItem("New Post", 2, "This is a new post");
-
+                long rowID = DS.insertItem("B Post", 3, "This is a new post");
+/*
 
                 Item temp = new Item();
                 temp.setId(rowID);
-                temp.setTitle("New Post");
-                temp.setRating(2);
+                temp.setTitle("A Post");
+                temp.setRating(3);
                 temp.setDescription("This is a new post.");
 
-                myList.add(temp);
+*/
+               // myList.add(temp);
+
+                myList.clear();
+                myList.addAll(DS.fetchAll(1,isAscending));
+
                 mAdapter.notifyDataSetChanged();
                 closeDB();
+//setActivatedPosition(ListView.INVALID_POSITION);
 
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -330,14 +399,51 @@ closeDB();
         // Called when the user selects a contextual menu item
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+
+            if(item.getItemId() == R.id.delete)
+            {
+
+                openDB();
+                //myList.remove(DS.fetchAll(1,isAscending).get(pos));
+
+
+
+                DS.deleteItem(Long.toString(DS.fetchAll(1,isAscending).get(mActivatedPosition).getId()));
+               // DS.deleteItem(Integer.toString(pos));
+                myList.clear();
+                myList.addAll(DS.fetchAll(1,isAscending));
+                mAdapter.notifyDataSetChanged();
+               closeDB();
+                //setActivatedPosition(ListView.INVALID_POSITION);
+
+
+
+//              getActivity().getSupportFragmentManager().findFragmentById(R.id.item_detail_container);
+
+
+                fm.popBackStack();
+               // ft.replace(R.id.item_detail_container, frag).addToBackStack(null).commit();
+                setActivatedPosition(ListView.INVALID_POSITION);
+                //getListView().setItemChecked(mActivatedPosition, false);
+                mActionMode.finish();
+
+
+                return true;
+            }
+            return false;
+
+            /*
             switch (item.getItemId()) {
                 case R.id.delete:
+
                     //shareCurrentItem();
                     //mode.finish(); // Action picked, so close the CAB
                     return true;
                 default:
                     return false;
             }
+            */
         }
 
         // Called when the user exits the action mode
@@ -350,5 +456,7 @@ closeDB();
 
 
     };
+
+
 
 }

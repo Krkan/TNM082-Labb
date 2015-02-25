@@ -1,22 +1,18 @@
 package com.example.izmir.labb;
 
-import android.app.Notification;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-//import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.RatingBar;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+
 
 import com.example.izmir.labb.dummy.DummyContent;
+
+
+import java.util.ArrayList;
 /*import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;*/
@@ -36,6 +32,8 @@ import android.view.MenuItem;*/
  * {@link ItemListFragment.Callbacks} interface
  * to listen for item selections.
  */
+
+
 public class ItemListActivity extends ActionBarActivity
         implements ItemListFragment.Callbacks {
 
@@ -49,8 +47,13 @@ public class ItemListActivity extends ActionBarActivity
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+       // fr = new ItemListFragment();
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
 
@@ -69,6 +72,8 @@ public class ItemListActivity extends ActionBarActivity
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
+
+
     }
 
     /**
@@ -101,23 +106,29 @@ public class ItemListActivity extends ActionBarActivity
     }
 
 */
+
     @Override
     public void onItemSelected(long id, int rating, String title, String description) {
 
 
         if (mTwoPane) {
-            /*
+
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putString(ItemDetailFragment.ARG_ITEM_ID, id);
+
+           /* Bundle arguments = new Bundle();
+            arguments.putString(ItemDetailFragment.ARG_ITEM_ID,id);
+
             ItemDetailFragment fragment = new ItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.item_detail_container, fragment)
                     .commit();
-                    */
+*/
+
+
+            /* MIN KOD
 
             TextView myTitle= (TextView)findViewById(R.id.theTitle);
             myTitle.setText(title);
@@ -128,6 +139,26 @@ public class ItemListActivity extends ActionBarActivity
 
             RatingBar bar = (RatingBar)findViewById(R.id.theRatingBar);
             bar.setRating(rating);
+MIN KOD
+*/
+
+
+
+
+
+            ItemDetailFragment fragment = new ItemDetailFragment();
+
+            Bundle arguments = new Bundle();
+            arguments.putLong(ItemDetailFragment.ARG_ITEM_ID, id);
+            arguments.putString(ItemDetailFragment.ARG_ITEM_TITLE, title);
+            arguments.putInt(ItemDetailFragment.ARG_ITEM_RATING, rating);
+            arguments.putString(ItemDetailFragment.ARG_ITEM_DESCRIPTION, description);
+
+            fragment.setArguments(arguments);
+
+            getFragmentManager().popBackStack();
+            getSupportFragmentManager().beginTransaction().replace(R.id.item_detail_container,fragment).addToBackStack(null).commit();
+
 
         } else {
             // In single-pane mode, simply start the detail activity
@@ -136,11 +167,41 @@ public class ItemListActivity extends ActionBarActivity
             detailIntent.putExtra("title",title);
             detailIntent.putExtra("description",description);
             detailIntent.putExtra("rating",rating);
-            startActivity(detailIntent);
+            detailIntent.putExtra("id",id);
+            startActivityForResult(detailIntent,1);
+/*
+           Intent detailIntent = new Intent(this, ItemDetailActivity.class);
+            detailIntent.putExtra(ItemDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(ItemDetailFragment.ARG_ITEM_TITLE, title);
+            detailIntent.putExtra(ItemDetailFragment.ARG_ITEM_RATING, rating);
+            detailIntent.putExtra(ItemDetailFragment.ARG_ITEM_DESCRIPTION, description);
+
+            startActivityForResult(detailIntent, 1);
+*/
+
         }
 
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK){
+                //String result=Long.toString(data.getExtras().getLong("id"));
+               // Log.v("LALALALA",result);
+                ((ItemListFragment) getSupportFragmentManager().findFragmentById(R.id.item_list)).deleteFromDB(data.getExtras().getLong("id"));
+
+
+
+//fr.deleteFromDB(data.getExtras().getLong("id"));
+
+
+            }
+
+        }
+    }
     }
 
 

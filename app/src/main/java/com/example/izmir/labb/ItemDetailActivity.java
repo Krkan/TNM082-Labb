@@ -1,7 +1,6 @@
 package com.example.izmir.labb;
 
 import android.content.Intent;
-import android.media.Rating;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.NavUtils;
@@ -9,8 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.RatingBar;
-import android.widget.TextView;
+
 
 
 /**
@@ -27,6 +25,34 @@ public class ItemDetailActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        ItemDetailFragment fragment = new ItemDetailFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putLong(ItemDetailFragment.ARG_ITEM_ID, getIntent().getExtras().getLong("id"));
+        arguments.putString(ItemDetailFragment.ARG_ITEM_TITLE, getIntent().getExtras().getString("title"));
+        arguments.putInt(ItemDetailFragment.ARG_ITEM_RATING, getIntent().getExtras().getInt("rating"));
+        arguments.putString(ItemDetailFragment.ARG_ITEM_DESCRIPTION, getIntent().getExtras().getString("description"));
+
+        fragment.setArguments(arguments);
+        setContentView(R.layout.fragment_item_detail);
+        //getSupportFragmentManager().beginTransaction().replace(R.id.item_detail_container,fragment).addToBackStack(null).commit();
+
+        getSupportFragmentManager().popBackStack();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.item_detail, fragment)
+                .commit();
+
+//setContentView(fragment.);
+       // getFragmentManager().popBackStack();
+        //getSupportFragmentManager().beginTransaction().replace(R.id.item_list,fragment).addToBackStack(null).commit();
+//        setContentView(R.layout.fragment_item_detail);
+        //getSupportFragmentManager().beginTransaction().replace(R.id.item_detail_container,fragment).addToBackStack(null).commit();
+
+        /*
+
+
         setContentView(R.layout.activity_item_detail);
 
         TextView title = (TextView)findViewById(R.id.theTitle_m);
@@ -37,7 +63,7 @@ public class ItemDetailActivity extends ActionBarActivity {
         rb.setRating(getIntent().getExtras().getInt("rating"));
         // Show the Up button in the action bar.
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+*/
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
         // (e.g. when rotating the screen from portrait to landscape).
@@ -47,6 +73,7 @@ public class ItemDetailActivity extends ActionBarActivity {
         //
         // http://developer.android.com/guide/components/fragments.html
         //
+        /*
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
@@ -59,10 +86,13 @@ public class ItemDetailActivity extends ActionBarActivity {
                     .add(R.id.item_detail_container, fragment)
                     .commit();
         }
+    */
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+
         int id = item.getItemId();
         if (id == android.R.id.home) {
             // This ID represents the Home or Up button. In the case of this
@@ -74,6 +104,16 @@ public class ItemDetailActivity extends ActionBarActivity {
             //
             NavUtils.navigateUpTo(this, new Intent(this, ItemListActivity.class));
             return true;
+        }
+        else if(id == R.id.delete){
+           long backid = getIntent().getExtras().getLong("id");
+          Intent myIntent = new Intent();
+           myIntent.putExtra("id", backid);
+          setResult(RESULT_OK,myIntent);
+            finish();
+
+           //  Log.v("AYY",Long.toString(backid));
+return true;
         }
         return super.onOptionsItemSelected(item);
     }
