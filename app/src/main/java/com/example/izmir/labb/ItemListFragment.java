@@ -1,6 +1,10 @@
 package com.example.izmir.labb;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,11 +18,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import java.util.ArrayList;
-
-
-
+import java.util.Random;
 
 
 /**
@@ -32,9 +35,12 @@ import java.util.ArrayList;
  */
 public class ItemListFragment extends ListFragment {
 public ActionMode mActionMode;
+    public static final String ORDER_ASCENDING = "ascending_order_preference";
+    public static final String SORT_SELECT = "sort";
 
     public Datasource DS;
     boolean isAscending = true;
+private int isPicked = 1;
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -112,7 +118,7 @@ public ActionMode mActionMode;
         openDB();
         DS.deleteItem(Long.toString(id));
         myList.clear();
-        myList.addAll(DS.fetchAll(1,isAscending));
+        myList.addAll(DS.fetchAll(isPicked,isAscending));
         mAdapter.notifyDataSetChanged();
 
         closeDB();
@@ -120,6 +126,33 @@ public ActionMode mActionMode;
 
     }
 
+    public void setSort(int p)
+    {
+       // Log.v("DDDD", Integer.toString(p));
+
+        isPicked = p;
+
+        openDB();
+        //DS.deleteItem(Long.toString(id));
+        myList.clear();
+        myList.addAll(DS.fetchAll(isPicked,isAscending));
+        mAdapter.notifyDataSetChanged();
+
+        closeDB();
+        if(isTablet()) {
+            fm.popBackStack();
+            setActivatedPosition(ListView.INVALID_POSITION);
+
+
+          try {
+              mActionMode.finish();
+          }catch(NullPointerException e){
+
+
+          }
+
+          }
+        }
 
 
 private void openDB()
@@ -147,6 +180,23 @@ FragmentTransaction ft;
     public void onCreate(Bundle savedInstanceState) {
 
 
+
+
+
+        SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
+
+
+        isAscending = getActivity().getPreferences(Activity.MODE_PRIVATE).getBoolean(ORDER_ASCENDING, true);
+        isPicked = getActivity().getPreferences(Activity.MODE_PRIVATE).getInt(SORT_SELECT, 1);
+
+
+/*
+        if (getActivity().findViewById(R.id.item_detail_container) != null) {
+
+
+        }
+*/
+
         if(isTablet())
         {
 
@@ -165,7 +215,7 @@ FragmentTransaction ft;
 
 
         openDB();
-            myList = DS.fetchAll(1,isAscending);
+            myList = DS.fetchAll(isPicked,isAscending);
 /*
         // TODO: replace with a real list adapter.
         setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
@@ -195,6 +245,10 @@ closeDB();
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
+
+
+
         super.onViewCreated(view, savedInstanceState);
 
         // Restore the previously serialized activated item position.
@@ -202,6 +256,10 @@ closeDB();
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+
+
+
+
     }
 
     @Override
@@ -242,8 +300,8 @@ closeDB();
 
        // mCallbacks.onItemSelected(Long.toString(DS.fetchAll(1,false).get(position).getId()));
        // mCallbacks.onItemSelected(DS.fetchAll(1,false).get(position).getTitle());
-        mCallbacks.onItemSelected(DS.fetchAll(1,isAscending).get(position).getId(),DS.fetchAll(1,isAscending).get(position).getRating(), DS.fetchAll(1,isAscending).get(position).getTitle(),
-                DS.fetchAll(1,isAscending).get(position).getDescription());
+        mCallbacks.onItemSelected(DS.fetchAll(isPicked,isAscending).get(position).getId(),DS.fetchAll(isPicked,isAscending).get(position).getRating(), DS.fetchAll(isPicked,isAscending).get(position).getTitle(),
+                DS.fetchAll(isPicked,isAscending).get(position).getDescription());
         if (isTablet()) {
             mActionMode = getActivity().startActionMode(mActionModeCallback);
 
@@ -329,28 +387,102 @@ closeDB();
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
+
+
+
         inflater.inflate(R.menu.menu_file, menu);
+
 
     }
 
+    @Override
+    public void onPrepareOptionsMenu (Menu menu)
+    {
+        if (isAscending) {
 
+            menu.findItem(R.id.ascending).setChecked(true);
+        }
+        else{
+            menu.findItem(R.id.ascending).setChecked(false);
+        }
+
+
+    }
+
+    Random rand = new Random();
+    String title[] = {"A Post", "B Post", "C Post", "D Post", "E Post"};
+    int rating[] = {3 , 4, 1, 2, 5};
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.ascending:
 
                 if (item.isChecked())
                 {
+                    isAscending=false;
+                    openDB();
                     item.setChecked(false);
+
+                    myList.clear();
+                    myList.addAll(DS.fetchAll(isPicked,isAscending));
+
+                    mAdapter.notifyDataSetChanged();
+                    closeDB();
+
+
+
+
+
                 }
                 else
                 {
                     item.setChecked(true);
+                    isAscending=true;
+                    openDB();
+
+                    myList.clear();
+                    myList.addAll(DS.fetchAll(isPicked,isAscending));
+
+                    mAdapter.notifyDataSetChanged();
+                    closeDB();
+
+
+
+
+
+
                 }
+                if(isTablet()) {
+                    fm.popBackStack();
+                    setActivatedPosition(ListView.INVALID_POSITION);
+
+                   try {
+                       mActionMode.finish();
+                   }catch (NullPointerException e){}
+
+                   }
+                SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
+
+                prefs.edit().putBoolean(ORDER_ASCENDING, isAscending).commit();
+
+
+                // ft.replace(R.id.item_detail_container, frag).addToBackStack(null).commit();
+
+
+
+                return true;
             case R.id.add:
+
+
+
+                int  n = rand.nextInt(5);
+
+
                 openDB();
-                long rowID = DS.insertItem("B Post", 3, "This is a new post");
+                long rowID = DS.insertItem(title[n], rating[n], "This is a new post");
 /*
 
                 Item temp = new Item();
@@ -363,13 +495,24 @@ closeDB();
                // myList.add(temp);
 
                 myList.clear();
-                myList.addAll(DS.fetchAll(1,isAscending));
+                myList.addAll(DS.fetchAll(isPicked,isAscending));
 
                 mAdapter.notifyDataSetChanged();
                 closeDB();
 //setActivatedPosition(ListView.INVALID_POSITION);
 
                 return true;
+            case R.id.sorting:
+
+
+                MyDialog dialog = new MyDialog();
+//dialog.setCancelable(false);
+//setTargetFragment(this,1);
+
+                dialog.show(getActivity().getFragmentManager(), "dialog");
+
+return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -409,17 +552,13 @@ closeDB();
 
 
 
-                DS.deleteItem(Long.toString(DS.fetchAll(1,isAscending).get(mActivatedPosition).getId()));
+                DS.deleteItem(Long.toString(DS.fetchAll(isPicked,isAscending).get(mActivatedPosition).getId()));
                // DS.deleteItem(Integer.toString(pos));
                 myList.clear();
-                myList.addAll(DS.fetchAll(1,isAscending));
+                myList.addAll(DS.fetchAll(isPicked,isAscending));
                 mAdapter.notifyDataSetChanged();
                closeDB();
-                //setActivatedPosition(ListView.INVALID_POSITION);
 
-
-
-//              getActivity().getSupportFragmentManager().findFragmentById(R.id.item_detail_container);
 
 
                 fm.popBackStack();
@@ -449,6 +588,9 @@ closeDB();
         // Called when the user exits the action mode
         @Override
         public void onDestroyActionMode(ActionMode mode) {
+            //fm.popBackStack();
+            // ft.replace(R.id.item_detail_container, frag).addToBackStack(null).commit();
+            setActivatedPosition(ListView.INVALID_POSITION);
             mActionMode = null;
         }
 
@@ -456,7 +598,6 @@ closeDB();
 
 
     };
-
 
 
 }

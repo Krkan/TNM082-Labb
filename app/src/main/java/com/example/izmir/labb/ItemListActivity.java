@@ -45,7 +45,7 @@ public class ItemListActivity extends ActionBarActivity
     //public ActionMode mActionMode;
 
 
-
+public int picked = 1;
 
 
     @Override
@@ -202,7 +202,18 @@ MIN KOD
 
         }
     }
-    }
+
+
+public void pickedSort(int picked)
+{
+
+
+    ((ItemListFragment) getSupportFragmentManager().findFragmentById(R.id.item_list)).setSort(picked);
+
+
+}
+
+}
 
 
 
