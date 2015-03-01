@@ -590,8 +590,9 @@ return true;
         public void onDestroyActionMode(ActionMode mode) {
             //fm.popBackStack();
             // ft.replace(R.id.item_detail_container, frag).addToBackStack(null).commit();
-            setActivatedPosition(ListView.INVALID_POSITION);
-            mActionMode = null;
+           // setActivatedPosition(ListView.INVALID_POSITION);
+            //mActionMode = null;
+            mActionMode.finish();
         }
 
 
