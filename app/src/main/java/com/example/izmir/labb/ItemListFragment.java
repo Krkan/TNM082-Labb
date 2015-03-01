@@ -506,12 +506,18 @@ closeDB();
 
 
                 MyDialog dialog = new MyDialog();
-//dialog.setCancelable(false);
-//setTargetFragment(this,1);
+
 
                 dialog.show(getActivity().getFragmentManager(), "dialog");
 
-return true;
+            return true;
+            case R.id.help:
+                HelpDialog helpDialog = new HelpDialog();
+
+                helpDialog.setCancelable(false);
+                helpDialog.show(getActivity().getFragmentManager(), "helpDialog");
+
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
